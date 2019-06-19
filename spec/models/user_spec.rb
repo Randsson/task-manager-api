@@ -9,5 +9,5 @@ RSpec.describe User, type: :model do
 
     it { is_expected.to validate_confirmation_of(:password) }
     
-    it { is_expected.to allow_value("rand@doug.com").for(:email) }   
+    it { is_expected.to allow_value('rand@doug.com').for(:email) }   
 end
