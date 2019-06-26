@@ -40,20 +40,20 @@ RSpec.describe 'Users API', type: :request do
         end
         
     
-      context 'when params are valid' do
+      context 'when the request params are valid' do
         let(:user_params) { attributes_for(:user) } #attributes_for do Factory_girl
 
         it 'returns status code 201' do
             expect(response).to have_http_status(201)
         end
 
-        it 'returns created user' do
+        it 'returns the created users email' do
             user_response = JSON.parse(response.body)
             expect(user_response['email']).to eq(user_params[:email])
         end
       end
 
-      context 'when params are invalid' do
+      context 'when the request params are invalid' do
         let(:user_params) { attributes_for(:user, email: 'invalid_email')  }
 
         it 'returns status code 422' do
@@ -66,4 +66,40 @@ RSpec.describe 'Users API', type: :request do
         end
       end
     end
+
+    describe "PUT /users/:id" do
+        before do
+            header = {'Accept' => 'application/vnd.taskmanager.v1'}
+            put "/users/#{user_id}" , params: { user: user_params }      
+        end
+        
+
+        context "when the request params are nvalid" do
+            let(:user_params) { { email: 'randsson@email.com' } }
+            
+            it 'returns status code 200' do
+                expect(response).to  have_http_status(200)
+            end
+
+            it 'returns the updated user' do
+                user_response = JSON.parse(response.body)
+                expect(user_response['email']).to eq(user_params[:email])
+            end
+        end
+
+        context 'when the request params are invalid' do
+            let(:user_params) { attributes_for(:user, email: 'invalid_email')  }
+    
+            it 'returns status code 422' do
+                expect(response).to have_http_status(422)
+            end
+    
+            it 'returns json data for errors' do
+                user_response = JSON.parse(response.body)
+                expect(user_response).to have_key('errors')
+            end
+          end
+        
+    end
+    
 end
