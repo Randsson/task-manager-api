@@ -3,19 +3,23 @@ require 'rails_helper'
 RSpec.describe 'Users API', type: :request do
     let!(:user) { create(:user) }
     let(:user_id) { user.id }
+    let(:headers) do
+        {
+            'Accept' => 'application/vnd.taskmanager.v1',
+            'Content-type' => Mime[:json].to_s
+        }
+    end
 
     before { host! 'api.task-manager.test'}
 
     describe 'GET /users/:id' do
         before do
-            headers = {'Accept' => 'application/vnd.taskmanager.v1'}
             get "/users/#{user_id}", params: {}, headers: headers
         end
 
         context 'when the user exists' do
             it 'returns the user' do
-                user_response = JSON.parse(response.body)
-                expect(user_response['id']).to eq(user_id)  
+                expect(json[:id]).to eq(user_id)  
             end
 
             it 'returns status 200' do
@@ -35,8 +39,7 @@ RSpec.describe 'Users API', type: :request do
     describe 'POST /users/' do
 
         before do
-            header = {'Accept' => 'application/vnd.taskmanager.v1'}
-            post '/users', params: { user: user_params }
+            post '/users', params: { user: user_params }.to_json, headers: headers
         end
         
     
@@ -48,8 +51,7 @@ RSpec.describe 'Users API', type: :request do
         end
 
         it 'returns the created users email' do
-            user_response = JSON.parse(response.body)
-            expect(user_response['email']).to eq(user_params[:email])
+            expect(json[:email]).to eq(user_params[:email])
         end
       end
 
@@ -61,16 +63,14 @@ RSpec.describe 'Users API', type: :request do
         end
 
         it 'returns json data for errors' do
-            user_response = JSON.parse(response.body)
-            expect(user_response).to have_key('errors')
+            expect(json).to have_key(:errors)
         end
       end
     end
 
     describe "PUT /users/:id" do
         before do
-            header = {'Accept' => 'application/vnd.taskmanager.v1'}
-            put "/users/#{user_id}" , params: { user: user_params }      
+            put "/users/#{user_id}" , params: { user: user_params }.to_json, headers: headers
         end
         
 
@@ -82,8 +82,7 @@ RSpec.describe 'Users API', type: :request do
             end
 
             it 'returns the updated user' do
-                user_response = JSON.parse(response.body)
-                expect(user_response['email']).to eq(user_params[:email])
+                expect(json[:email]).to eq(user_params[:email])
             end
         end
 
@@ -95,8 +94,7 @@ RSpec.describe 'Users API', type: :request do
             end
     
             it 'returns json data for errors' do
-                user_response = JSON.parse(response.body)
-                expect(user_response).to have_key('errors')
+                expect(json).to have_key(:errors)
             end
           end
         
@@ -104,8 +102,7 @@ RSpec.describe 'Users API', type: :request do
     
     describe 'DELETE /users/:id' do
       before do
-        header = {'Accept' => 'application/vnd.taskmanager.v1'}
-        delete "/users/#{user_id}", params: {}, headers: header
+        delete "/users/#{user_id}", params: {}, headers: headers
       end
 
       it 'returns status code 204' do
