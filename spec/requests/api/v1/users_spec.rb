@@ -96,8 +96,7 @@ RSpec.describe 'Users API', type: :request do
             it 'returns json data for errors' do
                 expect(json).to have_key(:errors)
             end
-          end
-        
+          end 
     end
     
     describe 'DELETE /users/:id' do
