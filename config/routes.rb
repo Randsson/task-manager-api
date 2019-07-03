@@ -7,7 +7,7 @@ Rails.application.routes.draw do
     namespace :v1, path: '/', contraints: ApiVersionConstraint.new(version: 1, default: true) do
       resources :users, only: [:show, :create, :update, :destroy]
       resources :sessions, only: [:create, :destroy]
-      resources :tasks, only: [:index, :show, :create]
+      resources :tasks, only: [:index, :show, :create, :update]
     end
   end 
 end
